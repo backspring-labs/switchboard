@@ -126,9 +126,9 @@ mypy src
 
 See the `docs/` directory for detailed specifications:
 
-- [Intent Document](docs/SWITCHBOARD_INTENT_DOC.md) - Philosophy and design rationale
-- [V1 Architecture Spec](docs/SWITCHBOARD_V1_ARCH_SPEC.md) - Complete architecture specification
-- [Terminology Alignment](docs/SWITCHBOARD_PATCHPANEL_SLOT_HOOK_ALIGNMENT.md) - Naming conventions
+- [Intent Document](docs/design/intent.md) - Philosophy and design rationale
+- [Architecture Spec](docs/design/architecture.md) - Complete architecture specification
+- [Terminology](docs/design/terminology.md) - Naming conventions
 
 ## License
 
