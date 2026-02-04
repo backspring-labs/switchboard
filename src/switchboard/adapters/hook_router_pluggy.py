@@ -90,9 +90,7 @@ class PluggyHookRouter:
         state = self._hooks[hook_key]
 
         # Remove from handlers list
-        state.handlers = [
-            h for h in state.handlers if h.contribution_id != contribution_id
-        ]
+        state.handlers = [h for h in state.handlers if h.contribution_id != contribution_id]
 
         # Rebuild Pluggy registrations
         self._rebuild_pluggy_registrations(state)
@@ -172,9 +170,7 @@ class PluggyHookRouter:
         """
         hookspec = pluggy.HookspecMarker(project_name)
 
-        def hook_method(
-            self: Any, payload: dict[str, Any], context: dict[str, Any]
-        ) -> Any:
+        def hook_method(self: Any, payload: dict[str, Any], context: dict[str, Any]) -> Any:
             """Hook specification method."""
 
         # Apply the hookspec decorator with firstresult for short-circuit behavior
@@ -216,9 +212,7 @@ class PluggyHookRouter:
 
         handler = registered.handler
 
-        def wrapper_method(
-            self: Any, payload: dict[str, Any], context: dict[str, Any]
-        ) -> Any:
+        def wrapper_method(self: Any, payload: dict[str, Any], context: dict[str, Any]) -> Any:
             return handler(payload, context)
 
         # Mark as hookimpl

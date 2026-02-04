@@ -54,9 +54,7 @@ class MemoryHookRouter:
         self._handlers[hook_key].append(registered)
 
         # Sort by priority (descending), then plugin_id, then contribution_id
-        self._handlers[hook_key].sort(
-            key=lambda h: (-h.priority, h.plugin_id, h.contribution_id)
-        )
+        self._handlers[hook_key].sort(key=lambda h: (-h.priority, h.plugin_id, h.contribution_id))
 
     def unregister_handler(self, hook_key: str, contribution_id: str) -> None:
         """Unregister a handler from a hook."""

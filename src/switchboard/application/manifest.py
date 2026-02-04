@@ -100,6 +100,10 @@ def _parse_manifest_dict(data: dict[str, Any]) -> PluginManifest:
     # Parse contributions
     contributions = _parse_contributions(data.get("contributions", {}), plugin_id)
 
+    # Parse dependency declarations (V2)
+    requires = _parse_string_list(data.get("requires", []), "requires")
+    optional_requires = _parse_string_list(data.get("optional_requires", []), "optional_requires")
+
     return PluginManifest(
         manifest_version=manifest_version,
         plugin_id=plugin_id,
@@ -109,6 +113,8 @@ def _parse_manifest_dict(data: dict[str, Any]) -> PluginManifest:
         name=name,
         description=description,
         contributions=contributions,
+        requires=requires,
+        optional_requires=optional_requires,
     )
 
 
@@ -138,9 +144,33 @@ def _require_field(data: dict[str, Any], field: str, expected_type: type) -> Any
     return value
 
 
-def _parse_contributions(
-    data: dict[str, Any] | None, plugin_id: str
-) -> ManifestContributions:
+def _parse_string_list(data: list[str] | None, field_name: str) -> tuple[str, ...]:
+    """Parse a list of strings from manifest data.
+
+    Args:
+        data: List of strings (may be None or empty).
+        field_name: Name of the field (for error messages).
+
+    Returns:
+        Tuple of strings.
+
+    Raises:
+        ManifestError: If data is not a list of strings.
+    """
+    if data is None:
+        return ()
+
+    if not isinstance(data, list):
+        raise ManifestError(f"{field_name} must be a list")
+
+    for i, item in enumerate(data):
+        if not isinstance(item, str):
+            raise ManifestError(f"{field_name}[{i}] must be a string, got {type(item).__name__}")
+
+    return tuple(data)
+
+
+def _parse_contributions(data: dict[str, Any] | None, plugin_id: str) -> ManifestContributions:
     """Parse the contributions section of a manifest.
 
     Args:

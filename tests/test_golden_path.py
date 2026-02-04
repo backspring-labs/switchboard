@@ -9,7 +9,6 @@ This test mirrors the README example and validates:
 6. Proper ordering and policy enforcement
 """
 
-
 from switchboard import (
     ApiRange,
     HookContribution,

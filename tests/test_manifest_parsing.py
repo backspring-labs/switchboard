@@ -276,9 +276,7 @@ plugin_version: "1.0.0"
 requires_switchboard: ">=0.1.0"
 entrypoint: file_plugin:Plugin
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yaml", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write(yaml_content)
             f.flush()
 
@@ -298,9 +296,7 @@ plugin_version: "1.0.0"
 requires_switchboard: ">=0.1.0"
 entrypoint: path_plugin:Plugin
 """
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yaml", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write(yaml_content)
             f.flush()
             path = Path(f.name)
@@ -352,3 +348,120 @@ contributions:
         # Should not raise
         manifest = parse_manifest(yaml_str)
         assert len(manifest.contributions.slots) == 1
+
+
+class TestDependencyFields:
+    """Tests for requires and optional_requires fields (V2)."""
+
+    def test_requires_empty_by_default(self) -> None:
+        """Manifest without requires should have empty tuple."""
+        yaml_str = """
+manifest_version: "1"
+plugin_id: com.example.test
+plugin_version: "1.0.0"
+requires_switchboard: ">=0.1.0"
+entrypoint: test:Plugin
+"""
+        manifest = parse_manifest(yaml_str)
+        assert manifest.requires == ()
+        assert manifest.optional_requires == ()
+
+    def test_requires_parses_list(self) -> None:
+        """requires field should parse as list of plugin IDs."""
+        yaml_str = """
+manifest_version: "1"
+plugin_id: com.example.test
+plugin_version: "1.0.0"
+requires_switchboard: ">=0.1.0"
+entrypoint: test:Plugin
+requires:
+  - com.example.core
+  - com.example.logging
+"""
+        manifest = parse_manifest(yaml_str)
+        assert manifest.requires == ("com.example.core", "com.example.logging")
+
+    def test_optional_requires_parses_list(self) -> None:
+        """optional_requires field should parse as list of plugin IDs."""
+        yaml_str = """
+manifest_version: "1"
+plugin_id: com.example.test
+plugin_version: "1.0.0"
+requires_switchboard: ">=0.1.0"
+entrypoint: test:Plugin
+optional_requires:
+  - com.example.analytics
+  - com.example.telemetry
+"""
+        manifest = parse_manifest(yaml_str)
+        assert manifest.optional_requires == ("com.example.analytics", "com.example.telemetry")
+
+    def test_requires_and_optional_together(self) -> None:
+        """Both requires and optional_requires can be specified."""
+        yaml_str = """
+manifest_version: "1"
+plugin_id: com.example.test
+plugin_version: "1.0.0"
+requires_switchboard: ">=0.1.0"
+entrypoint: test:Plugin
+requires:
+  - com.example.core
+optional_requires:
+  - com.example.analytics
+"""
+        manifest = parse_manifest(yaml_str)
+        assert manifest.requires == ("com.example.core",)
+        assert manifest.optional_requires == ("com.example.analytics",)
+
+    def test_requires_not_list_raises(self) -> None:
+        """requires must be a list."""
+        yaml_str = """
+manifest_version: "1"
+plugin_id: com.example.test
+plugin_version: "1.0.0"
+requires_switchboard: ">=0.1.0"
+entrypoint: test:Plugin
+requires: "not a list"
+"""
+        with pytest.raises(ManifestError, match="requires must be a list"):
+            parse_manifest(yaml_str)
+
+    def test_requires_item_not_string_raises(self) -> None:
+        """requires items must be strings."""
+        yaml_str = """
+manifest_version: "1"
+plugin_id: com.example.test
+plugin_version: "1.0.0"
+requires_switchboard: ">=0.1.0"
+entrypoint: test:Plugin
+requires:
+  - 123
+"""
+        with pytest.raises(ManifestError, match=r"requires\[0\] must be a string"):
+            parse_manifest(yaml_str)
+
+    def test_optional_requires_not_list_raises(self) -> None:
+        """optional_requires must be a list."""
+        yaml_str = """
+manifest_version: "1"
+plugin_id: com.example.test
+plugin_version: "1.0.0"
+requires_switchboard: ">=0.1.0"
+entrypoint: test:Plugin
+optional_requires: "not a list"
+"""
+        with pytest.raises(ManifestError, match="optional_requires must be a list"):
+            parse_manifest(yaml_str)
+
+    def test_empty_requires_list(self) -> None:
+        """Empty requires list should parse to empty tuple."""
+        yaml_str = """
+manifest_version: "1"
+plugin_id: com.example.test
+plugin_version: "1.0.0"
+requires_switchboard: ">=0.1.0"
+entrypoint: test:Plugin
+requires: []
+"""
+        manifest = parse_manifest(yaml_str)
+        assert manifest.requires == ()

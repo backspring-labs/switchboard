@@ -83,9 +83,7 @@ class TestMemoryHookRouter:
         def returns_none(payload: dict, context: dict) -> None:
             return None
 
-        contrib = HookContribution(
-            plugin_id="a", contribution_id="h1", hook_key="cmd", priority=50
-        )
+        contrib = HookContribution(plugin_id="a", contribution_id="h1", hook_key="cmd", priority=50)
         router.register_handler("cmd", contrib, returns_none)
 
         result = router.emit("cmd", HookPolicy.FIRST_RESULT, {}, None)

@@ -105,6 +105,43 @@ def on_app_started(payload: dict, context: dict) -> str:
     return f"App started at {payload['timestamp']}"
 ```
 
+## Introspection (V2)
+
+```python
+# Quick runtime overview
+info = panel.runtime_info()
+print(f"Plugins: {info.active_plugin_count}/{info.plugin_count}")
+
+# Full state snapshot
+snap = panel.snapshot()
+for plugin in snap.plugins:
+    print(f"{plugin.plugin_id}: {plugin.state}")
+
+# Human-readable dump (for logs/debugging)
+print(panel.dump_state())
+
+# JSON dump (for tooling)
+import json
+data = json.loads(panel.dump_state(format="json"))
+```
+
+## Plugin Dependencies (V2)
+
+```yaml
+# In plugin manifest
+requires:
+  - com.example.core           # Hard dependency
+optional_requires:
+  - com.example.analytics      # Soft dependency (order only)
+```
+
+```python
+# Activate all plugins in dependency order
+result = panel.activate_all()
+print(f"Activated: {result.order}")
+print(f"Blocked: {result.blocked}")
+```
+
 ## Development
 
 ```bash
@@ -120,6 +157,9 @@ ruff format .
 
 # Type check
 mypy src
+
+# Run smoke test
+PYTHONPATH=. python examples/smoke_test.py
 ```
 
 ## Documentation
@@ -128,7 +168,7 @@ See the `docs/` directory for detailed specifications:
 
 - [Intent Document](docs/design/intent.md) - Philosophy and design rationale
 - [Architecture Spec](docs/design/architecture.md) - Complete architecture specification
-- [Terminology](docs/design/terminology.md) - Naming conventions
+- [V2 Roadmap](docs/plans/v2-roadmap.md) - V2 features and scope
 
 ## License
 
