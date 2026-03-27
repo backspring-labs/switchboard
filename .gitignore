@@ -20,6 +20,9 @@ wheels/
 .installed.cfg
 *.egg
 
+# Node
+node_modules/
+
 # Virtual environments
 .venv/
 venv/
@@ -53,3 +56,4 @@ Thumbs.db
 # Local development
 *.local
 .env
+.python-version

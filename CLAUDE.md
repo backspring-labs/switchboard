@@ -2,9 +2,24 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Development Commands
+## Repository Structure
+
+This is a polyglot monorepo with implementations in Python and TypeScript:
+
+```
+packages/
+  switchboard-python/       # Python implementation
+  switchboard-typescript/   # TypeScript implementation (planned)
+docs/                       # Shared design docs
+```
+
+## Python Development Commands
+
+All Python commands run from `packages/switchboard-python/`:
 
 ```bash
+cd packages/switchboard-python
+
 # Install for development
 pip install -e ".[dev]"
 
@@ -35,7 +50,7 @@ PYTHONPATH=. python examples/smoke_test.py
 
 ## Project Overview
 
-Switchboard is a Python-first plugin runtime library providing host-owned, deterministic extensibility. It enables applications to define extension points (Slots and Hooks) that plugins can contribute to via manifests.
+Switchboard is a polyglot plugin runtime library providing host-owned, deterministic extensibility. It enables applications to define extension points (Slots and Hooks) that plugins can contribute to via manifests.
 
 ## Architecture
 
@@ -48,14 +63,14 @@ Switchboard is a Python-first plugin runtime library providing host-owned, deter
 - **Contribution**: What plugins contribute to slots/hooks
 - **Plugin lifecycle**: `ready → starting → active → stopping → ready` (plus `failed`)
 
-### Internal Dependencies
+### Python Internal Dependencies
 - **Pluggy**: Hook dispatch (behind `HookRouterPort` / `PluggyHookRouter`)
 - **Transitions**: Lifecycle state machine (internal to `PluginLifecycle`)
 - **PyYAML**: Manifest parsing (in `application/manifest.py`)
 
 These are internal implementation details - never expose Pluggy/Transitions types in public API.
 
-### Package Structure
+### Package Structure (Python)
 ```
 switchboard/
   domain/         # PatchPanel, lifecycle, models, policies, errors
@@ -113,3 +128,4 @@ See `docs/` for full specifications:
 - `docs/design/architecture.md` - Complete architecture specification
 - `docs/plans/v2-roadmap.md` - V2 roadmap and scope
 - `docs/plans/backlog.md` - Deferred features
+- `docs/plans/typescript-port.md` - TypeScript port plan

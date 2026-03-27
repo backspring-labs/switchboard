@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/switchboard-python
     strategy:
       matrix:
         python-version: ["3.11", "3.12", "3.13"]
@@ -33,11 +36,14 @@ jobs:
         uses: codecov/codecov-action@v4
         if: matrix.python-version == '3.11'
         with:
-          files: coverage.xml
+          files: packages/switchboard-python/coverage.xml
           fail_ci_if_error: false
 
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/switchboard-python
     steps:
       - uses: actions/checkout@v4
 
@@ -59,6 +65,9 @@ jobs:
 
   typecheck:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/switchboard-python
     steps:
       - uses: actions/checkout@v4
 
